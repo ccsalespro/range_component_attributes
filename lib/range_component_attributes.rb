@@ -1,3 +1,4 @@
+require "range_component_attributes/converter"
 require "range_component_attributes/version"
 
 require "active_support"
@@ -12,31 +13,45 @@ module RangeComponentAttributes
       upper_name: "#{range_name}_upper",
       exclude_end: true
     )
+      converter_name = "#{range_name}_converter"
+
       mod = Module.new do
-        [lower_name, upper_name].each do |part_name|
-          attr_reader part_name
-          define_method "#{part_name}=" do |val|
-            instance_variable_set "@#{range_name}_invalidated", true
-            instance_variable_set "@#{part_name}", val
+        define_method converter_name do
+          instance_variable_get("@#{converter_name}") ||
+            instance_variable_set("@#{converter_name}", Converter.new(range: send(range_name), exclude_end: exclude_end))
+        end
+
+        define_method "#{lower_name}" do
+          send(converter_name).lower
+        end
+
+        define_method "#{lower_name}=" do |val|
+          converter = send(converter_name)
+          converter.lower = val
+          if converter.valid?
+            send("#{range_name}=", converter.range)
           end
         end
 
-        define_method "load_#{range_name}_components" do
-          instance_variable_set "@#{lower_name}", send(range_name).begin
-          instance_variable_set "@#{upper_name}", send(range_name).end
+        define_method "#{upper_name}" do
+          send(converter_name).upper
         end
 
-        define_method "convert_#{range_name}_components_to_range" do
-          if instance_variable_get("@#{range_name}_invalidated")
-            send "#{range_name}=", Range.new(send(lower_name), send(upper_name), exclude_end)
+        define_method "#{upper_name}=" do |val|
+          converter = send(converter_name)
+          converter.upper = val
+          if converter.valid?
+            send("#{range_name}=", converter.range)
           end
+        end
+
+        define_method "#{range_name}=" do |val|
+          send(converter_name).range = val
+          super val
         end
       end
 
       self.include mod
-
-      after_find "load_#{range_name}_components".intern
-      before_save "convert_#{range_name}_components_to_range".intern
     end
   end
 end

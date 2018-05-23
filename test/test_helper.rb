@@ -2,6 +2,7 @@ $LOAD_PATH.unshift File.expand_path("../../lib", __FILE__)
 require "range_component_attributes"
 
 require "minitest/autorun"
+require "minitest/pride"
 
 require "active_record"
 require "yaml"
