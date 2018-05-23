@@ -1,0 +1,4 @@
+test:
+  adapter: postgresql
+  encoding: unicode
+  database: range_component_attributes_test
