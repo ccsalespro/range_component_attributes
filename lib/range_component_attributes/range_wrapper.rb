@@ -39,6 +39,9 @@ module RangeComponentAttributes
       if x
         @lower = x.begin
         @upper = x.end
+        if x.exclude_end? != @exclude_end && @upper.respond_to?(:next)
+          @upper += x.exclude_end? ? -1 : 1
+        end
         convert_lower_and_upper_to_range
       else
         @lower = nil

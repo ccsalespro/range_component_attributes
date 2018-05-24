@@ -28,6 +28,37 @@ class RangeWrapperTest < Minitest::Test
     assert_equal 5, r.upper
   end
 
+  def test_assigning_range_adjusts_upper_when_exclusive_end_is_mismatched_and_value_is_discrete
+    r = RangeComponentAttributes::RangeWrapper.new lower_type_converter: RangeComponentAttributes::IntegerConverter.new,
+      upper_type_converter: RangeComponentAttributes::IntegerConverter.new,
+      exclude_end: true
+
+    r.range = 1..5
+    assert_equal 1, r.lower
+    assert_equal 6, r.upper
+    assert_equal 1...6, r.range
+
+    r = RangeComponentAttributes::RangeWrapper.new lower_type_converter: RangeComponentAttributes::IntegerConverter.new,
+      upper_type_converter: RangeComponentAttributes::IntegerConverter.new,
+      exclude_end: false
+
+    r.range = 1...5
+    assert_equal 1, r.lower
+    assert_equal 4, r.upper
+    assert_equal 1..4, r.range
+  end
+
+  def test_assigning_range_does_not_adjust_upper_when_exclusive_end_is_mismatched_and_value_is_continuous
+    r = RangeComponentAttributes::RangeWrapper.new lower_type_converter: RangeComponentAttributes::FloatConverter.new,
+      upper_type_converter: RangeComponentAttributes::FloatConverter.new,
+      exclude_end: true
+
+    r.range = 1.0..5.0
+    assert_equal 1.0, r.lower
+    assert_equal 5.0, r.upper
+    assert_equal 1.0...5.0, r.range
+  end
+
   def test_assigning_lower_and_upper_sets_range
     r = RangeComponentAttributes::RangeWrapper.new lower_type_converter: RangeComponentAttributes::IntegerConverter.new,
       upper_type_converter: RangeComponentAttributes::IntegerConverter.new
