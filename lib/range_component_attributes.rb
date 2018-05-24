@@ -8,6 +8,29 @@ module RangeComponentAttributes
   extend ActiveSupport::Concern
 
   class_methods do
+    # range_component_attributes creates attributes corresponding to the lower
+    # and upper bounds of `range_name`. `lower_name` and `upper_name` controls
+    # the names of these attributes.
+    #
+    # `type_converter` is a callable object that converts its argument to the
+    # proper type. There are builtin type converters `IntegerConverter`,
+    # `DecimalConverter`, `FloatConverter`, and `DateConverter`.
+    #
+    # In addition, `lower_type_converter` and `upper_type_converter` can be
+    # separately specified. This is especially useful when the attributes should
+    # behave differently for blank values. For example, the upper bound may want
+    # to consider a blank value as Float::INFINITY.
+    #
+    # `exclude_end` controls whether the end is exclusive or not. Ranges are
+    # automatically normalized to this type. This is useful because PostgreSQL
+    # automatically normalizes ranges of discrete values to exclusive ends. e.g.
+    # `[1, 10]` becomes `[1,11)`. RangeComponentAttributes will handle this so
+    # the exact bound values persist even when PostgreSQL has changed them.
+    #
+    # Validations are automatically added that create an error if an assignment
+    # to bounds attribute fails due to a type conversion error. In addition, a
+    # validation checks that the lower bound is less than the upper bound. This
+    # error message can be customized by supplying `crossed_bounds_message`.
     def range_component_attributes(
       range_name,
       lower_name: "#{range_name}_lower",
