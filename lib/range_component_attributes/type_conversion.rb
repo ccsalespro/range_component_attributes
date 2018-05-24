@@ -9,6 +9,8 @@ module RangeComponentAttributes
   end
 
   class BaseConverter
+    attr_reader :blank_value
+
     def initialize blank_value: nil
       @blank_value = blank_value
     end

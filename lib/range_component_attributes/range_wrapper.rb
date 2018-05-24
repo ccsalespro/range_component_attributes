@@ -11,10 +11,12 @@ module RangeComponentAttributes
       exclude_end: true,
 
       # Initial values
-      lower: :not_provided,
-      upper: :not_provided,
+      lower: nil,
+      upper: nil,
       range: nil
     )
+      raise ArgumentError, "lower/upper and range are mutually exclusive" if (lower || upper) && range
+
       @errors = {}
       @lower_type_converter = lower_type_converter
       @upper_type_converter = upper_type_converter
@@ -23,8 +25,8 @@ module RangeComponentAttributes
       if range
         self.range = range
       else
-        self.lower = lower unless lower == :not_provided
-        self.upper = upper unless upper == :not_provided
+        self.lower = lower
+        self.upper = upper
       end
     end
 
@@ -81,7 +83,7 @@ module RangeComponentAttributes
 
     def convert_lower_and_upper_to_range
       return nil unless errors.keys.reject { |k| k == :range }.empty?
-      @range = if @lower || @upper
+      @range = if @lower != @lower_type_converter.blank_value || @upper != @upper_type_converter.blank_value
         Range.new(@lower, @upper, @exclude_end)
       else
         nil
