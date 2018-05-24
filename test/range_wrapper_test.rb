@@ -68,4 +68,25 @@ class RangeWrapperTest < Minitest::Test
     assert_equal 45, r.upper
     assert_equal 42...45, r.range
   end
+
+  def test_type_conversion_errors
+    r = RangeComponentAttributes::RangeWrapper.new type_converter: RangeComponentAttributes::IntegerConverter.new
+    r.lower = "abc"
+    assert_equal "abc", r.lower
+    refute r.valid?
+    assert_equal "is not a integer", r.errors[:lower]
+
+    r.upper = "xyz"
+    assert_equal "xyz", r.upper
+    refute r.valid?
+    assert_equal "is not a integer", r.errors[:upper]
+
+    r.lower = 40
+    refute r.errors[:lower]
+
+    r.upper = 50
+    refute r.errors[:upper]
+
+    assert r.valid?
+  end
 end

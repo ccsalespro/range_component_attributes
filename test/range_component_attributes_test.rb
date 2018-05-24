@@ -31,4 +31,11 @@ class RangeComponentAttributesTest < Minitest::Test
     assert_equal Date.new(2000,1,1), widget.valid_from
     assert_equal Date.new(2000,1,10), widget.valid_to
   end
+
+  def test_detect_type_conversion_errors
+    widget = Widget.new valid_from: "abc", valid_to: "xyz"
+    refute widget.valid?
+    assert_equal ["is not a date"], widget.errors[:valid_from]
+    assert_equal ["is not a date"], widget.errors[:valid_to]
+  end
 end

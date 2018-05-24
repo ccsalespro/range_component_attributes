@@ -2,6 +2,8 @@ module RangeComponentAttributes
   class InvalidRangeError < StandardError; end
 
   class RangeWrapper
+    attr_reader :errors
+
     def initialize(
       # Range type
       type_converter:,
@@ -14,7 +16,7 @@ module RangeComponentAttributes
     )
       raise ArgumentError, "lower/upper and range are mutually exclusive" if (lower || upper) && range
 
-      @valid = true
+      @errors = {}
       @type_converter = type_converter
       @exclude_end = exclude_end
 
@@ -49,8 +51,9 @@ module RangeComponentAttributes
 
     def lower=(x)
       @lower = begin
-        @type_converter.(x)
+        @type_converter.(x).tap { errors.delete(:lower) }
       rescue TypeConversionError => e
+        errors[:lower] = "is not a #{e.target_type}"
         x
       end
       convert_lower_and_upper_to_range
@@ -62,28 +65,30 @@ module RangeComponentAttributes
 
     def upper=(x)
       @upper = begin
-        @type_converter.(x)
+        @type_converter.(x).tap { errors.delete(:upper) }
       rescue TypeConversionError => e
+        errors[:upper] = "is not a #{e.target_type}"
         x
       end
       convert_lower_and_upper_to_range
     end
 
     def valid?
-      @valid
+      errors.empty?
     end
 
   private
 
     def convert_lower_and_upper_to_range
+      return nil unless errors.keys.reject { |k| k == :range }.empty?
       @range = if @lower || @upper
         Range.new(@lower, @upper, @exclude_end)
       else
         nil
       end
-      @valid = true
-    rescue ArgumentError
-      @valid = false
+      errors.clear
+    rescue ArgumentError => e
+      errors[:range] = e.to_s
     end
   end
 end

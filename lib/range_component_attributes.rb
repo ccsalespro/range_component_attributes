@@ -52,7 +52,18 @@ module RangeComponentAttributes
           send(range_wrapper_name).range = val
           super val
         end
+
+        define_method "check_#{range_name}_errors" do
+          range_wrapper = send(range_wrapper_name)
+          unless range_wrapper.valid?
+            errors.add lower_name, range_wrapper.errors[:lower] if range_wrapper.errors[:lower]
+            errors.add upper_name, range_wrapper.errors[:upper] if range_wrapper.errors[:upper]
+            errors.add upper_name, range_wrapper.errors[:range] if range_wrapper.errors[:range]
+          end
+        end
       end
+
+      validate "check_#{range_name}_errors".to_sym
 
       self.include mod
     end
