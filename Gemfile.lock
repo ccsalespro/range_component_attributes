@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    range_component_attributes (0.1.0)
+    range_component_attributes (1.0.0)
       activerecord (>= 5.2.0)
       activesupport (>= 5.2.0)
 
