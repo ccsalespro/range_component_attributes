@@ -11,6 +11,7 @@ module RangeComponentAttributes
   class IntegerConverter
     def call(value)
       return nil if value.blank?
+      return value if value == Float::INFINITY
       Integer(value)
     rescue StandardError => e
       raise TypeConversionError.new(e, "integer")
@@ -20,6 +21,7 @@ module RangeComponentAttributes
   class DecimalConverter
     def call(value)
       return nil if value.blank?
+      return value if value == Float::INFINITY
       BigDecimal(value, 16)
     rescue StandardError => e
       raise TypeConversionError.new(e, "number")
@@ -29,6 +31,7 @@ module RangeComponentAttributes
   class FloatConverter
     def call(value)
       return nil if value.blank?
+      return value if value == Float::INFINITY
       Float(value)
     rescue StandardError => e
       raise TypeConversionError.new(e, "number")
@@ -38,6 +41,7 @@ module RangeComponentAttributes
   class DateConverter
     def call(value)
       return nil if value.blank?
+      return value if value == Float::INFINITY
       return value if value.kind_of? Date
       value = value.to_s
       if value =~ /\A(\d\d\d\d)-(\d\d)-(\d\d)\z/

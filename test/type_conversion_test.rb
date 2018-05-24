@@ -4,6 +4,7 @@ class TypeConversionTest < Minitest::Test
   def test_integer_converter
     converter = RangeComponentAttributes::IntegerConverter.new
     assert_equal 42, converter.("42")
+    assert_equal Float::INFINITY, converter.(Float::INFINITY)
     refute converter.(nil)
     refute converter.("")
     assert_raises(RangeComponentAttributes::TypeConversionError) { converter.("asdf") }
@@ -14,6 +15,7 @@ class TypeConversionTest < Minitest::Test
     converter = RangeComponentAttributes::FloatConverter.new
     assert_equal 42.0, converter.("42")
     assert_equal 42.5, converter.("42.5")
+    assert_equal Float::INFINITY, converter.(Float::INFINITY)
     refute converter.(nil)
     refute converter.("")
     assert_raises(RangeComponentAttributes::TypeConversionError) { converter.("asdf") }
@@ -25,6 +27,7 @@ class TypeConversionTest < Minitest::Test
     assert_equal BigDecimal("42.5"), converter.("42.5")
     assert_equal BigDecimal("42"), converter.(42.0)
     assert_equal BigDecimal("42"), converter.(42)
+    assert_equal Float::INFINITY, converter.(Float::INFINITY)
     refute converter.(nil)
     refute converter.("")
     assert_raises(RangeComponentAttributes::TypeConversionError) { converter.("asdf") }
@@ -36,6 +39,7 @@ class TypeConversionTest < Minitest::Test
     assert_equal Date.new(2000,1,1), converter.("1/1/2000")
     assert_equal Date.new(2000,1,1), converter.("2000-01-01")
     assert_equal Date.new(2000,1,1), converter.(Date.new(2000,1,1))
+    assert_equal Float::INFINITY, converter.(Float::INFINITY)
     refute converter.(nil)
     refute converter.("")
     assert_raises(RangeComponentAttributes::TypeConversionError) { converter.("asdf") }
