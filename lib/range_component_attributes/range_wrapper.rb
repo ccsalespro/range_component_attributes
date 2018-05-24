@@ -1,11 +1,21 @@
 module RangeComponentAttributes
   class InvalidRangeError < StandardError; end
 
-  class Converter
-    def initialize(lower: nil, upper: nil, range: nil, exclude_end: true)
+  class RangeWrapper
+    def initialize(
+      # Range type
+      type_converter:,
+      exclude_end: true,
+
+      # Initial values
+      lower: nil,
+      upper: nil,
+      range: nil
+    )
       raise ArgumentError, "lower/upper and range are mutually exclusive" if (lower || upper) && range
 
       @valid = true
+      @type_converter = type_converter
       @exclude_end = exclude_end
 
       if range
@@ -38,7 +48,11 @@ module RangeComponentAttributes
     end
 
     def lower=(x)
-      @lower = x
+      @lower = begin
+        @type_converter.(x)
+      rescue TypeConversionError => e
+        x
+      end
       convert_lower_and_upper_to_range
     end
 
@@ -47,7 +61,11 @@ module RangeComponentAttributes
     end
 
     def upper=(x)
-      @upper = x
+      @upper = begin
+        @type_converter.(x)
+      rescue TypeConversionError => e
+        x
+      end
       convert_lower_and_upper_to_range
     end
 

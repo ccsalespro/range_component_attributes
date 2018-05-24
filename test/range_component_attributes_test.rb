@@ -3,7 +3,10 @@ require "test_helper"
 class Widget < ActiveRecord::Base
   include RangeComponentAttributes
 
-  range_component_attributes :valid_dates, lower_name: :valid_from, upper_name: :valid_to
+  range_component_attributes :valid_dates,
+    lower_name: :valid_from,
+    upper_name: :valid_to,
+    type_converter: DateConverter.new
 end
 
 class RangeComponentAttributesTest < Minitest::Test
@@ -19,5 +22,13 @@ class RangeComponentAttributesTest < Minitest::Test
     widget = Widget.find widget.id
     assert_equal Date.new(2000,1,1), widget.valid_dates.begin
     assert_equal Date.new(2000,1,10), widget.valid_dates.end
+  end
+
+  def test_component_attributes_are_converted_to_proper_type_on_assignment
+    widget = Widget.new valid_from: "2000-01-01", valid_to: "2000-01-10"
+    assert_equal Date.new(2000,1,1), widget.valid_from
+    assert_equal Date.new(2000,1,10), widget.valid_to
+    assert_equal Date.new(2000,1,1), widget.valid_from
+    assert_equal Date.new(2000,1,10), widget.valid_to
   end
 end

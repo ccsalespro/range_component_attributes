@@ -1,4 +1,5 @@
-require "range_component_attributes/converter"
+require "range_component_attributes/range_wrapper"
+require "range_component_attributes/type_conversion"
 require "range_component_attributes/version"
 
 require "active_support"
@@ -11,42 +12,44 @@ module RangeComponentAttributes
       range_name,
       lower_name: "#{range_name}_lower",
       upper_name: "#{range_name}_upper",
+      type_converter:,
       exclude_end: true
     )
-      converter_name = "#{range_name}_converter"
+      range_wrapper_name = "#{range_name}_wrapper"
 
       mod = Module.new do
-        define_method converter_name do
-          instance_variable_get("@#{converter_name}") ||
-            instance_variable_set("@#{converter_name}", Converter.new(range: send(range_name), exclude_end: exclude_end))
+        define_method range_wrapper_name do
+          instance_variable_get("@#{range_wrapper_name}") ||
+            instance_variable_set("@#{range_wrapper_name}",
+              RangeWrapper.new(type_converter: type_converter, exclude_end: exclude_end, range: send(range_name)))
         end
 
         define_method "#{lower_name}" do
-          send(converter_name).lower
+          send(range_wrapper_name).lower
         end
 
         define_method "#{lower_name}=" do |val|
-          converter = send(converter_name)
-          converter.lower = val
-          if converter.valid?
-            send("#{range_name}=", converter.range)
+          range_wrapper = send(range_wrapper_name)
+          range_wrapper.lower = val
+          if range_wrapper.valid?
+            send("#{range_name}=", range_wrapper.range)
           end
         end
 
         define_method "#{upper_name}" do
-          send(converter_name).upper
+          send(range_wrapper_name).upper
         end
 
         define_method "#{upper_name}=" do |val|
-          converter = send(converter_name)
-          converter.upper = val
-          if converter.valid?
-            send("#{range_name}=", converter.range)
+          range_wrapper = send(range_wrapper_name)
+          range_wrapper.upper = val
+          if range_wrapper.valid?
+            send("#{range_name}=", range_wrapper.range)
           end
         end
 
         define_method "#{range_name}=" do |val|
-          send(converter_name).range = val
+          send(range_wrapper_name).range = val
           super val
         end
       end
