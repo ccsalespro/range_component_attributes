@@ -6,7 +6,8 @@ class Widget < ActiveRecord::Base
   range_component_attributes :valid_dates,
     lower_name: :valid_from,
     upper_name: :valid_to,
-    type_converter: DateConverter.new
+    type_converter: DateConverter.new,
+    crossed_bounds_message: "must be less than valid to"
 
   range_component_attributes :valid_prices,
     lower_name: :min_price,
@@ -14,8 +15,6 @@ class Widget < ActiveRecord::Base
     lower_type_converter: DecimalConverter.new,
     upper_type_converter: DecimalConverter.new(blank_value: Float::INFINITY)
 end
-
-
 
 class RangeComponentAttributesTest < Minitest::Test
   def test_component_attributes_are_populated_on_load
@@ -53,5 +52,15 @@ class RangeComponentAttributesTest < Minitest::Test
     assert_equal BigDecimal("10"), widget.min_price
     assert_equal Float::INFINITY, widget.max_price
     assert_equal BigDecimal("10")...Float::INFINITY, widget.valid_prices
+  end
+
+  def test_crossed_bounds
+    widget = Widget.new min_price: "10", max_price: "5"
+    refute widget.valid?
+    assert_equal ["must be less than upper bound"], widget.errors[:min_price]
+
+    widget = Widget.new valid_from: Date.new(2001,1,1), valid_to: Date.new(2000,1,1)
+    refute widget.valid?
+    assert_equal ["must be less than valid to"], widget.errors[:valid_from]
   end
 end

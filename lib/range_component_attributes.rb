@@ -15,7 +15,8 @@ module RangeComponentAttributes
       type_converter: nil,
       lower_type_converter: nil,
       upper_type_converter: nil,
-      exclude_end: true
+      exclude_end: true,
+      crossed_bounds_message: "must be less than upper bound"
     )
       range_wrapper_name = "#{range_name}_wrapper"
       lower_type_converter ||= type_converter
@@ -31,7 +32,8 @@ module RangeComponentAttributes
                 lower_type_converter: lower_type_converter,
                 upper_type_converter: upper_type_converter,
                 exclude_end: exclude_end,
-                range: send(range_name)
+                range: send(range_name),
+                crossed_bounds_message: crossed_bounds_message
               )
             )
         end

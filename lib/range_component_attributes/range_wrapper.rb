@@ -13,7 +13,9 @@ module RangeComponentAttributes
       # Initial values
       lower: nil,
       upper: nil,
-      range: nil
+      range: nil,
+
+      crossed_bounds_message: "must be less than upper bound"
     )
       raise ArgumentError, "lower/upper and range are mutually exclusive" if (lower || upper) && range
 
@@ -21,6 +23,7 @@ module RangeComponentAttributes
       @lower_type_converter = lower_type_converter
       @upper_type_converter = upper_type_converter
       @exclude_end = exclude_end
+      @crossed_bounds_message = crossed_bounds_message
 
       if range
         self.range = range
@@ -92,6 +95,9 @@ module RangeComponentAttributes
         nil
       end
       errors.clear
+
+      crossed_bounds = lower > upper rescue nil
+      errors[:lower] = @crossed_bounds_message if crossed_bounds
     rescue ArgumentError => e
       errors[:range] = e.to_s
     end
