@@ -45,6 +45,9 @@ class Widget < ActiveRecord::Base
     lower_type_converter: DecimalConverter.new,
     upper_type_converter: DecimalConverter.new(blank_value: Float::INFINITY)
 end
+
+widget = Widget.new min_price: "10", max_price: "20"
+widget.valid_prices #=> 0.1e2...0.2e2
 ```
 
 range_component_attributes creates attributes corresponding to the lower and
