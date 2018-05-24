@@ -6,25 +6,25 @@ module RangeComponentAttributes
 
     def initialize(
       # Range type
-      type_converter:,
+      lower_type_converter:,
+      upper_type_converter:,
       exclude_end: true,
 
       # Initial values
-      lower: nil,
-      upper: nil,
+      lower: :not_provided,
+      upper: :not_provided,
       range: nil
     )
-      raise ArgumentError, "lower/upper and range are mutually exclusive" if (lower || upper) && range
-
       @errors = {}
-      @type_converter = type_converter
+      @lower_type_converter = lower_type_converter
+      @upper_type_converter = upper_type_converter
       @exclude_end = exclude_end
 
       if range
         self.range = range
       else
-        self.lower = lower
-        self.upper = upper
+        self.lower = lower unless lower == :not_provided
+        self.upper = upper unless upper == :not_provided
       end
     end
 
@@ -51,7 +51,7 @@ module RangeComponentAttributes
 
     def lower=(x)
       @lower = begin
-        @type_converter.(x).tap { errors.delete(:lower) }
+        @lower_type_converter.(x).tap { errors.delete(:lower) }
       rescue TypeConversionError => e
         errors[:lower] = "is not a #{e.target_type}"
         x
@@ -65,7 +65,7 @@ module RangeComponentAttributes
 
     def upper=(x)
       @upper = begin
-        @type_converter.(x).tap { errors.delete(:upper) }
+        @upper_type_converter.(x).tap { errors.delete(:upper) }
       rescue TypeConversionError => e
         errors[:upper] = "is not a #{e.target_type}"
         x

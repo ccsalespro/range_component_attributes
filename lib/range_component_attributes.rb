@@ -12,16 +12,28 @@ module RangeComponentAttributes
       range_name,
       lower_name: "#{range_name}_lower",
       upper_name: "#{range_name}_upper",
-      type_converter:,
+      type_converter: nil,
+      lower_type_converter: nil,
+      upper_type_converter: nil,
       exclude_end: true
     )
       range_wrapper_name = "#{range_name}_wrapper"
+      lower_type_converter ||= type_converter
+      upper_type_converter ||= type_converter
+      raise ArgumentError, "must provide lower_type_converter or type_converter" unless lower_type_converter
+      raise ArgumentError, "must provide upper_type_converter or type_converter" unless upper_type_converter
 
       mod = Module.new do
         define_method range_wrapper_name do
           instance_variable_get("@#{range_wrapper_name}") ||
             instance_variable_set("@#{range_wrapper_name}",
-              RangeWrapper.new(type_converter: type_converter, exclude_end: exclude_end, range: send(range_name)))
+              RangeWrapper.new(
+                lower_type_converter: lower_type_converter,
+                upper_type_converter: upper_type_converter,
+                exclude_end: exclude_end,
+                range: send(range_name)
+              )
+            )
         end
 
         define_method "#{lower_name}" do

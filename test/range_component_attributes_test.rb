@@ -7,7 +7,15 @@ class Widget < ActiveRecord::Base
     lower_name: :valid_from,
     upper_name: :valid_to,
     type_converter: DateConverter.new
+
+  range_component_attributes :valid_prices,
+    lower_name: :min_price,
+    upper_name: :max_price,
+    lower_type_converter: DecimalConverter.new,
+    upper_type_converter: DecimalConverter.new(blank_value: Float::INFINITY)
 end
+
+
 
 class RangeComponentAttributesTest < Minitest::Test
   def test_component_attributes_are_populated_on_load
@@ -37,5 +45,13 @@ class RangeComponentAttributesTest < Minitest::Test
     refute widget.valid?
     assert_equal ["is not a date"], widget.errors[:valid_from]
     assert_equal ["is not a date"], widget.errors[:valid_to]
+  end
+
+  def test_separate_type_converters_for_each_bound
+    widget = Widget.new min_price: "10", max_price: ""
+    assert widget.valid?
+    assert_equal BigDecimal("10"), widget.min_price
+    assert_equal Float::INFINITY, widget.max_price
+    assert_equal BigDecimal("10")...Float::INFINITY, widget.valid_prices
   end
 end

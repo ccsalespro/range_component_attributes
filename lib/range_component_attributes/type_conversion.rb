@@ -8,9 +8,15 @@ module RangeComponentAttributes
     end
   end
 
-  class IntegerConverter
+  class BaseConverter
+    def initialize blank_value: nil
+      @blank_value = blank_value
+    end
+  end
+
+  class IntegerConverter < BaseConverter
     def call(value)
-      return nil if value.blank?
+      return @blank_value if value.blank?
       return value if value == Float::INFINITY
       Integer(value)
     rescue StandardError => e
@@ -18,9 +24,9 @@ module RangeComponentAttributes
     end
   end
 
-  class DecimalConverter
+  class DecimalConverter < BaseConverter
     def call(value)
-      return nil if value.blank?
+      return @blank_value if value.blank?
       return value if value == Float::INFINITY
       BigDecimal(value, 16)
     rescue StandardError => e
@@ -28,9 +34,9 @@ module RangeComponentAttributes
     end
   end
 
-  class FloatConverter
+  class FloatConverter < BaseConverter
     def call(value)
-      return nil if value.blank?
+      return @blank_value if value.blank?
       return value if value == Float::INFINITY
       Float(value)
     rescue StandardError => e
@@ -38,9 +44,9 @@ module RangeComponentAttributes
     end
   end
 
-  class DateConverter
+  class DateConverter < BaseConverter
     def call(value)
-      return nil if value.blank?
+      return @blank_value if value.blank?
       return value if value == Float::INFINITY
       return value if value.kind_of? Date
       value = value.to_s
