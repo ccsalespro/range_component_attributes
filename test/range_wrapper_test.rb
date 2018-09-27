@@ -138,4 +138,18 @@ class RangeWrapperTest < Minitest::Test
 
     assert r.valid?
   end
+
+  def test_update_range_where_new_lower_is_greater_than_old_upper
+    r = RangeComponentAttributes::RangeWrapper.new lower_type_converter: RangeComponentAttributes::IntegerConverter.new,
+      upper_type_converter: RangeComponentAttributes::IntegerConverter.new
+    r.lower = 0
+    r.upper = 10
+
+    assert r.valid?
+
+    r.lower = 20
+    r.upper = 30
+
+    assert r.valid?
+  end
 end

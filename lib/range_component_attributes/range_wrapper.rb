@@ -78,6 +78,12 @@ module RangeComponentAttributes
         errors[:upper] = "is not a #{e.target_type}"
         x
       end
+
+      # An error on lower might have been caused by crossed bounds. So reassign lower to itself to recheck.
+      if errors[:lower].present?
+        self.lower = lower
+      end
+
       convert_lower_and_upper_to_range
     end
 
