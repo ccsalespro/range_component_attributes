@@ -65,9 +65,9 @@ Float::INFINITY.
 
 `exclude_end` controls whether the end is exclusive or not. Ranges are
 automatically normalized to this type. This is useful because PostgreSQL
-automatically normalizes ranges of discrete values to exclusive endsg. `[1, 10]`
-becomes `[1,11)`. RangeComponentAttributes will handle this so the exact bound
-values persist even when PostgreSQL has changed them.
+automatically normalizes ranges of discrete values to exclusive ends. e.g. `[1,
+10]` becomes `[1,11)`. RangeComponentAttributes will handle this so the exact
+bound values persist even when PostgreSQL has changed them.
 
 Validations are automatically added that create an error if an assignment to
 bounds attribute fails due to a type conversion error. In addition, a validation
