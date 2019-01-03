@@ -61,4 +61,17 @@ module RangeComponentAttributes
       raise TypeConversionError.new(e, "date")
     end
   end
+
+  class TimeConverter < BaseConverter
+    def call(value)
+      return @blank_value if value.blank?
+      return value if value == Float::INFINITY
+      return value if value.kind_of? Time
+      time = Time.zone.parse value.to_s
+      raise TypeConversionError.new(nil, "time") unless time
+      time
+    rescue StandardError => e
+      raise TypeConversionError.new(e, "time")
+    end
+  end
 end

@@ -61,4 +61,24 @@ class TypeConversionTest < Minitest::Test
     assert_equal Float::INFINITY, converter.(nil)
     assert_equal Float::INFINITY, converter.("")
   end
+
+  def test_time_converter
+    Time.zone = "America/New_York"
+    converter = RangeComponentAttributes::TimeConverter.new
+    assert_equal Time.zone.local(2000,1,1), converter.("01/01/2000")
+    assert_equal Time.zone.local(2000,1,1), converter.("1/1/2000")
+    assert_equal Time.zone.local(2000,1,1), converter.("2000-01-01")
+    assert_equal Time.zone.local(2000,1,1), converter.(Date.new(2000,1,1))
+    assert_equal Time.zone.local(2000,1,1), converter.(Time.zone.local(2000,1,1))
+    assert_equal Time.zone.local(2000,1,1, 8, 23, 58), converter.("2000-01-01 08:23:58")
+    assert_equal Float::INFINITY, converter.(Float::INFINITY)
+    refute converter.(nil)
+    refute converter.("")
+    assert_raises(RangeComponentAttributes::TypeConversionError) { converter.("asdf") }
+    assert_raises(RangeComponentAttributes::TypeConversionError) { converter.("3/50/1290") }
+
+    converter = RangeComponentAttributes::TimeConverter.new blank_value: Float::INFINITY
+    assert_equal Float::INFINITY, converter.(nil)
+    assert_equal Float::INFINITY, converter.("")
+  end
 end
