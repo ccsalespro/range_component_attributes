@@ -100,7 +100,10 @@ class RangeWrapperTest < Minitest::Test
       upper_type_converter: RangeComponentAttributes::IntegerConverter.new
     assert r.valid?
     r.lower = 42
-    refute r.valid?
+
+    # Invalid on Ruby < 2.6, but valid on 2.6+
+    # refute r.valid?
+
     r.upper = 50
     assert r.valid?
     r.lower = "foo"

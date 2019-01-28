@@ -25,6 +25,10 @@ module RangeComponentAttributes
       @exclude_end = exclude_end
       @crossed_bounds_message = crossed_bounds_message
 
+      @range = nil
+      @lower = nil
+      @upper = nil
+
       if range
         self.range = range
       else

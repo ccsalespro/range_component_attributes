@@ -49,7 +49,9 @@ module RangeComponentAttributes
 
       mod = Module.new do
         define_method range_wrapper_name do
-          instance_variable_get("@#{range_wrapper_name}") ||
+          if instance_variable_defined?("@#{range_wrapper_name}")
+            instance_variable_get("@#{range_wrapper_name}")
+          else
             instance_variable_set("@#{range_wrapper_name}",
               RangeWrapper.new(
                 lower_type_converter: lower_type_converter,
@@ -59,6 +61,7 @@ module RangeComponentAttributes
                 crossed_bounds_message: crossed_bounds_message
               )
             )
+          end
         end
 
         define_method "#{lower_name}" do
