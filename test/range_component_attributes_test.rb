@@ -63,4 +63,13 @@ class RangeComponentAttributesTest < Minitest::Test
     refute widget.valid?
     assert_equal ["must be less than valid to"], widget.errors[:valid_from]
   end
+
+  def test_reload_clears_cache
+    ref1 = Widget.create! valid_from: Date.new(2000,1,1), valid_to: Date.new(2000,1,10)
+    ref2 = Widget.find ref1.id
+    assert_equal Date.new(2000,1,10), ref2.valid_to
+    ref1.update! valid_to: Date.new(2000,2,1)
+    ref2.reload
+    assert_equal Date.new(2000,2,1), ref2.valid_to
+  end
 end

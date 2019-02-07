@@ -101,6 +101,11 @@ module RangeComponentAttributes
             errors.add upper_name, range_wrapper.errors[:range] if range_wrapper.errors[:range]
           end
         end
+
+        define_method "reload" do |options=nil|
+          super options
+          send(range_wrapper_name).range = send(range_name)
+        end
       end
 
       validate "check_#{range_name}_errors".to_sym
