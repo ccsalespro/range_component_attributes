@@ -1,3 +1,7 @@
+# 1.1.1 (February 7, 2019)
+
+* Fix reload to refresh stale cached values.
+
 # 1.1.0 (January 28, 2019)
 
 * Add TimeConverter
