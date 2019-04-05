@@ -103,8 +103,9 @@ module RangeComponentAttributes
         end
 
         define_method "reload" do |options=nil|
-          super options
+          result = super options
           send(range_wrapper_name).range = send(range_name)
+          result
         end
       end
 

@@ -72,4 +72,9 @@ class RangeComponentAttributesTest < Minitest::Test
     ref2.reload
     assert_equal Date.new(2000,2,1), ref2.valid_to
   end
+
+  def test_reload_returns_self
+    w = Widget.create! valid_from: Date.new(2000,1,1), valid_to: Date.new(2000,1,10)
+    assert_equal w, w.reload
+  end
 end

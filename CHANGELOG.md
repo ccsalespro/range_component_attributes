@@ -1,3 +1,7 @@
+# Unreleased
+
+* Fix reload to return self.
+
 # 1.1.1 (February 7, 2019)
 
 * Fix reload to refresh stale cached values.
