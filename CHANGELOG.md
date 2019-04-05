@@ -1,4 +1,4 @@
-# Unreleased
+# 1.1.2 (April 5, 2019)
 
 * Fix reload to return self.
 
